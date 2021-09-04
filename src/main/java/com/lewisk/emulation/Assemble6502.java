@@ -140,6 +140,8 @@ public class Assemble6502
         // Filter whitespace
         String code = src.replaceAll("\\s","");
 
+        if(code.length() < 3) return null;
+
         // Get instruction and arguments.
         String instr = code.substring(0,3);
         String args  = code.substring(3);
@@ -322,7 +324,8 @@ public class Assemble6502
                 String name = line.substring(0, labelEnd);
                 asmLabels.replace(name, byteCount);
                 line = line.replace(name + ":", "");
-                if(line.length() == 0) continue;
+                String labelTest = line.replaceAll("\\s", "");
+                if(labelTest.length() == 0) continue;
             }
 
             // Replace Labels (With temporary value)
@@ -357,7 +360,14 @@ public class Assemble6502
         for(String line : fData)
         {
             // Skip labels
-            if(line.endsWith(":")) continue;
+            if(line.contains(":"))
+            {
+                int labelEnd = line.indexOf(":");
+                String name = line.substring(0, labelEnd);
+                line = line.replace(name + ":", "");
+                String labelTest = line.replaceAll("\\s", "");
+                if(labelTest.length() == 0) continue;
+            }
 
             // Replace labels
             for(Map.Entry<String, Integer> e : asmLabels.entrySet())

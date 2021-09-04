@@ -97,7 +97,7 @@ public class CPU6502 implements Runnable
         registers.A = registers.X = registers.Y = 0;
         executiontime = 0;
         halt = true;
-        clockspeed = 50000; //3e+6; // 3Mhz
+        clockspeed = 20000; //3e+6; // 3Mhz
         resetFlags();
     }
 
@@ -221,7 +221,7 @@ public class CPU6502 implements Runnable
     }
     protected short indirectX()
     {
-        short zp = (short) (nextBytePC() + registers.X);
+        short zp = (short) (nextBytePC() + Byte.toUnsignedInt(registers.X));
         zp = (short) Byte.toUnsignedInt((byte) zp);
         int L = Byte.toUnsignedInt(readRAM(zp));
         int H = Byte.toUnsignedInt(readRAM(++zp));
@@ -234,7 +234,7 @@ public class CPU6502 implements Runnable
         int L = Byte.toUnsignedInt(readRAM(zp));
         int H = Byte.toUnsignedInt(readRAM(++zp));
 
-        return (short) (bytesToShort(L, H) + registers.Y);
+        return (short) (bytesToShort(L, H) + Byte.toUnsignedInt(registers.Y));
     }
 
     protected byte readZeroPage(byte reg)
@@ -471,6 +471,8 @@ public class CPU6502 implements Runnable
             {
                 execute();
             }
+
+            printRAM(0, 20);
         }
     }
 }

@@ -46,8 +46,8 @@ public class Main extends Application
         );
         */
 
-       // cpu.importRAM("snake.6502");
-        String[] data = Assemble6502.assemble("test.asm");
+     //  cpu.importRAM("test.6502");
+        String[] data = Assemble6502.assemble("test.6502");
         cpu.importRAM(data);
 
         launch(args);
