@@ -97,7 +97,7 @@ public class CPU6502 implements Runnable
         registers.A = registers.X = registers.Y = 0;
         executiontime = 0;
         halt = true;
-        clockspeed = 20000; //3e+6; // 3Mhz
+        clockspeed = 30000; //3e+6; // 3Mhz
         resetFlags();
     }
 
@@ -471,8 +471,6 @@ public class CPU6502 implements Runnable
             {
                 execute();
             }
-
-            printRAM(0, 20);
         }
     }
 }

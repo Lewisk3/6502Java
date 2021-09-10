@@ -147,6 +147,35 @@ public class Assemble6502
         String args  = code.substring(3);
         args = args.toLowerCase();
 
+        instrOutput.name = instr.toUpperCase();
+        instrOutput.args = args;
+
+        // DCB Support
+        if(instr.equalsIgnoreCase("DCB"))
+        {
+            String[] byteArgs = args.split(",");
+            for(String value : byteArgs)
+            {
+                if(value.startsWith("#"))
+                {
+                    int decValue = Integer.parseInt(value.substring(1),10);
+                    output.add(decValue);
+                }
+                else if(value.startsWith("$"))
+                {
+                    int hexValue = Integer.parseInt(value.substring(1),16);
+                    output.add(hexValue);
+                }
+            }
+
+            Integer[] bytes = new Integer[output.size()];
+            bytes = output.toArray(bytes);
+            instrOutput.bytes = bytes;
+            instrOutput.mode = modesRegex.get("IMM");
+
+            return instrOutput;
+        }
+
         // Resolve instruction mode.
         ModeData mode = null;
         String modeName = "NUL";
@@ -164,8 +193,6 @@ public class Assemble6502
             }
         }
 
-        instrOutput.name = instr;
-        instrOutput.args = args;
         if(mode == null)
         {
             return instrOutput;
@@ -336,7 +363,7 @@ public class Assemble6502
                 {
                     var bytecode = getBytes(line);
                     String addr = "$00";
-                    if(bytecode.name.equalsIgnoreCase("JMP") || bytecode.name.equalsIgnoreCase("JSR"))
+                    if(!bytecode.name.startsWith("B") || bytecode.name.equals("BIT"))
                     {
                         addr = "$0000";
                     }
@@ -379,7 +406,11 @@ public class Assemble6502
                     var bytecode = getBytes(line);
                     String addr = "";
 
-                    if(bytecode.name.equalsIgnoreCase("JMP") || bytecode.name.equalsIgnoreCase("JSR"))
+                    // Gross hacks to determine if relative branch address should be
+                    // used or absolute. Note to Self: Setup a more competent
+                    // instruction table next time, one where instruction names can be
+                    // referenced back to their opcodes and modes can be as well.
+                    if(!bytecode.name.startsWith("B") || bytecode.name.equals("BIT"))
                     {
                         addr = String.format("%04x",entryPoint+e.getValue());
                     }
